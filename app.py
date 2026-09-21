@@ -8,7 +8,7 @@ import chat_store as store
 
 # Page Config
 st.set_page_config(
-    page_title="EMI & Loan Advisor Agent", 
+    page_title="EMI, Loan & Wealth Advisor", 
     page_icon="🏦", 
     layout="centered",
     initial_sidebar_state="expanded"
@@ -123,6 +123,7 @@ div[data-testid="stHorizontalBlock"] .stButton > button:hover p {
     box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
 }
 
+/* Explicitly force all text, paragraphs, lists, and headings inside chat to be bright white */
 [data-testid="stChatMessage"] *, 
 [data-testid="stChatMessage"] p, 
 [data-testid="stChatMessage"] li, 
@@ -300,7 +301,7 @@ chat_id = st.session_state.chat_id
 hist = agent.memory["conversation_history"]
 
 # ----------------------------------------------------------------------------
-# QUICK PROMPT CHIPS (INCLUDES MONEY MULTIPLICATION CHIP)
+# QUICK PROMPT CHIPS
 # ----------------------------------------------------------------------------
 st.markdown("<span style='color: #cbd5e1; font-weight: 600; font-size: 0.9rem;'>✨ Hover over boxes to reveal prompt details:</span>", unsafe_allow_html=True)
 c1, c2, c3, c4 = st.columns(4)
@@ -347,11 +348,32 @@ if prompt:
     st.rerun()
 
 # ----------------------------------------------------------------------------
-# SIDEBAR NAVIGATION & MEMORY CARDS
+# SIDEBAR NAVIGATION, BANK COMPARISON & MEMORY CARDS
 # ----------------------------------------------------------------------------
 with st.sidebar:
     st.markdown('<div class="side-brand">🏦 Loan Advisor</div>', unsafe_allow_html=True)
     st.button("＋  New Chat", key="newchat", on_click=cb_new_chat, use_container_width=True)
+
+    # --- INDIAN BANK HOME LOAN RATE COMPARISON ---
+    with st.expander("🏛️ Major Indian Banks Rates (2026)", expanded=False):
+        st.markdown("Select a bank to query its starting home loan rate:")
+        bank_rates = {
+            "SBI": "7.25% p.a.",
+            "HDFC Bank": "7.75% p.a.",
+            "ICICI Bank": "8.50% p.a.",
+            "Axis Bank": "8.75% p.a.",
+            "Bank of Baroda": "8.40% p.a.",
+            "Kotak Mahindra": "8.70% p.a."
+        }
+        selected_bank = st.selectbox("Compare Indian Lenders:", list(bank_rates.keys()))
+        rate_val = bank_rates[selected_bank]
+        st.info(f"**{selected_bank}** Home Loan starting rate: **{rate_val}**")
+        
+        if st.button(f"Calculate with {selected_bank}", use_container_width=True):
+            rate_num = float(rate_val.replace("% p.a.", ""))
+            agent.run_step(f"Calculate EMI for 20 lakh loan at {rate_num}% for 5 years with my salary")
+            store.save_chat(chat_id, agent.memory)
+            st.rerun()
 
     query = st.text_input("Search chats", key="q_search", placeholder="Search chat history...", label_visibility="collapsed")
     chats = store.search_chats(query)
