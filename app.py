@@ -6,7 +6,7 @@ import streamlit as st
 from agent import EMILoanAgent, generate_amortization_schedule, inr
 import chat_store as store
 
-# Page Config
+# Page Config - Force Sidebar Expanded Initially
 st.set_page_config(
     page_title="EMI, Loan & Wealth Advisor", 
     page_icon="🏦", 
@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES BOTTOM FOOTER & CHAT INPUT)
+# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (SIDEBAR TOGGLE PERMANENTLY HIDDEN)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -42,26 +42,23 @@ html, body, [class*="css"], .stApp {
 #MainMenu, footer { visibility: hidden; }
 
 /* ----------------------------------------------------------------------------
-   FORCE TOP-LEFT SIDEBAR TOGGLE ICON TO REMAIN VISIBLE AT ALL TIMES
+   PERMANENTLY HIDE SIDEBAR TOGGLE / COLLAPSE BUTTONS
 ---------------------------------------------------------------------------- */
 header[data-testid="stHeader"] { 
-    background: transparent !important; 
-    visibility: visible !important;
-    z-index: 999999 !important;
+    display: none !important;
 }
+
 button[data-testid="stSidebarToggle"], 
 [data-testid="stHeader"] button,
 [data-testid="stSidebarCollapseButton"] {
-    color: #ffffff !important;
-    visibility: visible !important;
-    background: rgba(30, 41, 59, 0.9) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    border-radius: 10px !important;
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 .block-container {
     max-width: 880px;
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     padding-bottom: 6rem;
 }
 
@@ -98,9 +95,8 @@ button[data-testid="stSidebarToggle"],
 }
 
 /* ----------------------------------------------------------------------------
-   FIX FOR BOTTOM FOOTER CONTAINER & CHAT INPUT (MAKES BOTTOM ENTIRELY DARK)
+   FIX FOR BOTTOM FOOTER CONTAINER & CHAT INPUT (DARK THEME)
 ---------------------------------------------------------------------------- */
-/* Targets Streamlit's fixed bottom container */
 [data-testid="stBottom"],
 [data-testid="stBottom"] > div {
     background: #0b0f19 !important;
@@ -108,7 +104,6 @@ button[data-testid="stSidebarToggle"],
     border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Inner Chat Input Container */
 [data-testid="stChatInput"],
 .stChatInputContainer,
 div[data-testid="stChatInputContainer"] {
@@ -133,7 +128,6 @@ div[data-testid="stChatInputContainer"] {
     font-weight: 400 !important;
 }
 
-/* Chat Input Send Icon & File Upload Icon */
 [data-testid="stChatInput"] button {
     background-color: #6366f1 !important;
     color: #ffffff !important;
@@ -141,7 +135,7 @@ div[data-testid="stChatInputContainer"] {
 }
 
 /* ----------------------------------------------------------------------------
-   UNIVERSAL TEXT VISIBILITY FIX (SELECTBOX, LABELS, EXPANDERS & TITLES)
+   UNIVERSAL TEXT VISIBILITY FIX
 ---------------------------------------------------------------------------- */
 label, 
 p, 
@@ -181,7 +175,7 @@ div[data-baseweb="menu"] div {
 }
 
 /* ----------------------------------------------------------------------------
-   QUICK PROMPT SUGGESTION BUTTONS (HOVER TO SHOW TEXT EFFECT)
+   QUICK PROMPT SUGGESTION BUTTONS
 ---------------------------------------------------------------------------- */
 div[data-testid="stHorizontalBlock"] .stButton > button {
     background: rgba(30, 41, 59, 0.8) !important;
