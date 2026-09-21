@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# ENHANCED CUSTOM CSS (FIXES SELECTBOX & LABEL VISIBILITY IN DARK MODE)
+# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES ALL TEXT VISIBILITY)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -80,36 +80,47 @@ html, body, [class*="css"], .stApp {
 }
 
 /* ----------------------------------------------------------------------------
-   FIX FOR SELECTBOX, LABELS, EXPANDERS & DROP-DOWN MENU TEXT VISIBILITY
+   UNIVERSAL TEXT VISIBILITY FIX (SELECTBOX, LABELS, EXPANDERS & TITLES)
 ---------------------------------------------------------------------------- */
+/* Force all Labels, Headers, Dropdown Labels, and Paragraphs to pure white */
 label, 
+p, 
+span, 
+h1, h2, h3, h4, h5, h6,
 .stSelectbox label, 
 .stSelectbox p,
-[data-testid="stWidgetLabel"] p {
+[data-testid="stWidgetLabel"] p,
+[data-testid="stMarkdownContainer"] p,
+.stExpander details summary p {
+    color: #f8fafc !important;
+    opacity: 1 !important;
+}
+
+/* Expander Header Text Specific Fix */
+.stExpander details summary span,
+.stExpander details summary div {
     color: #f8fafc !important;
     font-weight: 700 !important;
-    font-size: 1rem !important;
 }
 
 /* Selectbox Dropdown Box Styling */
 div[data-baseweb="select"] > div {
     background-color: rgba(30, 41, 59, 0.95) !important;
     color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
     border-radius: 10px !important;
 }
 
-/* Dropdown Menu Option List (When Opened) */
-div[data-baseweb="popover"] div {
-    background-color: #1e293b !important;
+div[data-baseweb="select"] span {
     color: #ffffff !important;
+    font-weight: 600 !important;
 }
 
-/* Expanders Header Styling */
-.stExpander details summary p {
-    color: #f8fafc !important;
-    font-weight: 700 !important;
-    font-size: 1.05rem !important;
+/* Dropdown Menu Popover Options (When Clicked) */
+div[data-baseweb="popover"] div, 
+div[data-baseweb="menu"] div {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
 }
 
 /* ----------------------------------------------------------------------------
@@ -124,7 +135,6 @@ div[data-testid="stHorizontalBlock"] .stButton > button {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Text hidden by default (only icons/emojis visible) */
 div[data-testid="stHorizontalBlock"] .stButton > button p {
     color: transparent !important;
     font-weight: 600 !important;
@@ -133,7 +143,6 @@ div[data-testid="stHorizontalBlock"] .stButton > button p {
     text-shadow: none !important;
 }
 
-/* Hover State: Reveal full text with vibrant color and glowing border */
 div[data-testid="stHorizontalBlock"] .stButton > button:hover {
     background: rgba(99, 102, 241, 0.25) !important;
     border-color: #818cf8 !important;
@@ -201,7 +210,6 @@ section[data-testid="stSidebar"] {
 }
 section[data-testid="stSidebar"] * { color: var(--text-main) !important; }
 
-/* New Chat Button */
 section[data-testid="stSidebar"] .stButton > button {
     background: var(--primary-glow) !important;
     color: #ffffff !important;
@@ -212,7 +220,6 @@ section[data-testid="stSidebar"] .stButton > button {
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
 }
 
-/* Sidebar Chat History Rows */
 section[data-testid="stSidebar"] [class*="st-key-hist"] .stButton > button {
     background: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -227,14 +234,12 @@ section[data-testid="stSidebar"] [class*="st-key-histactive"] .stButton > button
     border-color: #818cf8 !important;
 }
 
-/* Delete Buttons */
 section[data-testid="stSidebar"] [class*="st-key-histdel"] .stButton > button {
     background: rgba(239, 68, 68, 0.2) !important;
     border: 1px solid rgba(239, 68, 68, 0.4) !important;
     border-radius: 10px !important;
 }
 
-/* Memory Cards */
 .mem-card {
     background: rgba(30, 41, 59, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -246,7 +251,6 @@ section[data-testid="stSidebar"] [class*="st-key-histdel"] .stButton > button {
 .mem-card .value { font-size: 1.05rem; font-weight: 700; color: #ffffff !important; margin-top: 2px; }
 .mem-card .value.accent { color: var(--accent-gold) !important; }
 
-/* File Chips */
 .file-chip {
     display: inline-block;
     background: rgba(20, 184, 166, 0.2);
@@ -500,10 +504,16 @@ if agent.memory.get("computed_options"):
             color_discrete_map={"Principal Paid": "#14b8a6", "Interest Paid": "#f59e0b"},
             template="plotly_dark"
         )
+        
+        # Explicit Plotly Dark Theme Color Styling for High Visibility
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Plus Jakarta Sans, sans-serif")
+            font=dict(family="Plus Jakarta Sans, sans-serif", color="#f8fafc", size=14),
+            title=dict(font=dict(color="#ffffff", size=18)),
+            legend=dict(font=dict(color="#ffffff")),
+            xaxis=dict(title_font=dict(color="#ffffff"), tickfont=dict(color="#f8fafc")),
+            yaxis=dict(title_font=dict(color="#ffffff"), tickfont=dict(color="#f8fafc"))
         )
         st.plotly_chart(fig, use_container_width=True)
 
