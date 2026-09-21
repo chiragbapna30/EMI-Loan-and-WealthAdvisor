@@ -98,13 +98,13 @@ button[data-testid="stSidebarToggle"],
 }
 
 /* ----------------------------------------------------------------------------
-   CHAT INPUT BOX DARK STYLING (FIXES WHITE CHATBOX BACKGROUND & TEXT)
+   CHAT INPUT BOX STYLING (DARK TEXT ON LIGHT INPUT BOX FOR MAXIMUM VISIBILITY)
 ---------------------------------------------------------------------------- */
 [data-testid="stChatInput"],
 .stChatInputContainer,
 div[data-testid="stChatInputContainer"] {
-    background-color: rgba(15, 23, 42, 0.95) !important;
-    border: 1px solid rgba(99, 102, 241, 0.4) !important;
+    background-color: #f8fafc !important;
+    border: 2px solid #6366f1 !important;
     border-radius: 16px !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
 }
@@ -112,14 +112,16 @@ div[data-testid="stChatInputContainer"] {
 [data-testid="stChatInput"] textarea,
 [data-testid="stChatInput"] input,
 .stChatInputContainer textarea {
-    color: #ffffff !important;
+    color: #0f172a !important;
     background-color: transparent !important;
-    caret-color: #ffffff !important;
-    font-size: 1rem !important;
+    caret-color: #0f172a !important;
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
 }
 
 [data-testid="stChatInput"] textarea::placeholder {
-    color: #94a3b8 !important;
+    color: #64748b !important;
+    font-weight: 500 !important;
 }
 
 /* Chat Input Send Icon Button */
