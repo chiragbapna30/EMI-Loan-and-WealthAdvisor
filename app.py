@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES CHAT INPUT & SIDEBAR TOGGLE)
+# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES BOTTOM FOOTER & CHAT INPUT)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -98,13 +98,22 @@ button[data-testid="stSidebarToggle"],
 }
 
 /* ----------------------------------------------------------------------------
-   CHAT INPUT BOX STYLING (DARK TEXT ON LIGHT INPUT BOX FOR MAXIMUM VISIBILITY)
+   FIX FOR BOTTOM FOOTER CONTAINER & CHAT INPUT (MAKES BOTTOM ENTIRELY DARK)
 ---------------------------------------------------------------------------- */
+/* Targets Streamlit's fixed bottom container */
+[data-testid="stBottom"],
+[data-testid="stBottom"] > div {
+    background: #0b0f19 !important;
+    background-color: #0b0f19 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Inner Chat Input Container */
 [data-testid="stChatInput"],
 .stChatInputContainer,
 div[data-testid="stChatInputContainer"] {
-    background-color: #f8fafc !important;
-    border: 2px solid #6366f1 !important;
+    background-color: rgba(30, 41, 59, 0.95) !important;
+    border: 1px solid rgba(99, 102, 241, 0.4) !important;
     border-radius: 16px !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
 }
@@ -112,19 +121,19 @@ div[data-testid="stChatInputContainer"] {
 [data-testid="stChatInput"] textarea,
 [data-testid="stChatInput"] input,
 .stChatInputContainer textarea {
-    color: #0f172a !important;
+    color: #ffffff !important;
     background-color: transparent !important;
-    caret-color: #0f172a !important;
-    font-size: 1.05rem !important;
-    font-weight: 600 !important;
-}
-
-[data-testid="stChatInput"] textarea::placeholder {
-    color: #64748b !important;
+    caret-color: #ffffff !important;
+    font-size: 1rem !important;
     font-weight: 500 !important;
 }
 
-/* Chat Input Send Icon Button */
+[data-testid="stChatInput"] textarea::placeholder {
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+}
+
+/* Chat Input Send Icon & File Upload Icon */
 [data-testid="stChatInput"] button {
     background-color: #6366f1 !important;
     color: #ffffff !important;
