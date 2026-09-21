@@ -82,7 +82,6 @@ html, body, [class*="css"], .stApp {
 /* ----------------------------------------------------------------------------
    UNIVERSAL TEXT VISIBILITY FIX (SELECTBOX, LABELS, EXPANDERS & TITLES)
 ---------------------------------------------------------------------------- */
-/* Force all Labels, Headers, Dropdown Labels, and Paragraphs to pure white */
 label, 
 p, 
 span, 
@@ -116,7 +115,7 @@ div[data-baseweb="select"] span {
     font-weight: 600 !important;
 }
 
-/* Dropdown Menu Popover Options (When Clicked) */
+/* Dropdown Menu Popover Options */
 div[data-baseweb="popover"] div, 
 div[data-baseweb="menu"] div {
     background-color: #1e293b !important;
@@ -251,6 +250,7 @@ section[data-testid="stSidebar"] [class*="st-key-histdel"] .stButton > button {
 .mem-card .value { font-size: 1.05rem; font-weight: 700; color: #ffffff !important; margin-top: 2px; }
 .mem-card .value.accent { color: var(--accent-gold) !important; }
 
+/* File Chips */
 .file-chip {
     display: inline-block;
     background: rgba(20, 184, 166, 0.2);
@@ -384,7 +384,7 @@ if prompt:
     st.rerun()
 
 # ----------------------------------------------------------------------------
-# SIDEBAR NAVIGATION, BANK COMPARISON & MEMORY CARDS
+# SIDEBAR NAVIGATION, BANK COMPARISON, GOLD/SILVER RATES & MEMORY CARDS
 # ----------------------------------------------------------------------------
 with st.sidebar:
     st.markdown('<div class="side-brand">🏦 Loan Advisor</div>', unsafe_allow_html=True)
@@ -408,6 +408,30 @@ with st.sidebar:
         if st.button(f"Calculate with {selected_bank}", use_container_width=True):
             rate_num = float(rate_val.replace("% p.a.", ""))
             agent.run_step(f"Calculate EMI for 20 lakh loan at {rate_num}% for 5 years with my salary")
+            store.save_chat(chat_id, agent.memory)
+            st.rerun()
+
+    # --- INDIAN GOLD & SILVER RATES ---
+    with st.expander("🪙 Gold & Silver Rates in India (2026)", expanded=False):
+        st.markdown(
+            """
+            <div class="mem-card" style="border-left: 4px solid #f59e0b;">
+                <div class="label">24K Gold (per 10g)</div>
+                <div class="value accent">₹76,450</div>
+            </div>
+            <div class="mem-card" style="border-left: 4px solid #e2e8f0;">
+                <div class="label">22K Gold (per 10g)</div>
+                <div class="value">₹70,080</div>
+            </div>
+            <div class="mem-card" style="border-left: 4px solid #94a3b8;">
+                <div class="label">Silver (per 1 kg)</div>
+                <div class="value" style="color: #cbd5e1 !important;">₹89,200</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button(" Ask Gold Loan Eligibility", use_container_width=True):
+            agent.run_step("How do gold loans work and what is the maximum loan amount I can get against gold in India?")
             store.save_chat(chat_id, agent.memory)
             st.rerun()
 
@@ -505,7 +529,6 @@ if agent.memory.get("computed_options"):
             template="plotly_dark"
         )
         
-        # Explicit Plotly Dark Theme Color Styling for High Visibility
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
