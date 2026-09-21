@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# ENHANCED CUSTOM CSS (OPTIMIZED FOR DARK THEME & TEXT VISIBILITY)
+# ENHANCED CUSTOM CSS (FIXES SELECTBOX & LABEL VISIBILITY IN DARK MODE)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -80,6 +80,39 @@ html, body, [class*="css"], .stApp {
 }
 
 /* ----------------------------------------------------------------------------
+   FIX FOR SELECTBOX, LABELS, EXPANDERS & DROP-DOWN MENU TEXT VISIBILITY
+---------------------------------------------------------------------------- */
+label, 
+.stSelectbox label, 
+.stSelectbox p,
+[data-testid="stWidgetLabel"] p {
+    color: #f8fafc !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+}
+
+/* Selectbox Dropdown Box Styling */
+div[data-baseweb="select"] > div {
+    background-color: rgba(30, 41, 59, 0.95) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+}
+
+/* Dropdown Menu Option List (When Opened) */
+div[data-baseweb="popover"] div {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+/* Expanders Header Styling */
+.stExpander details summary p {
+    color: #f8fafc !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+}
+
+/* ----------------------------------------------------------------------------
    QUICK PROMPT SUGGESTION BUTTONS (HOVER TO SHOW TEXT EFFECT)
 ---------------------------------------------------------------------------- */
 div[data-testid="stHorizontalBlock"] .stButton > button {
@@ -123,7 +156,6 @@ div[data-testid="stHorizontalBlock"] .stButton > button:hover p {
     box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
 }
 
-/* Explicitly force all text, paragraphs, lists, and headings inside chat to be bright white */
 [data-testid="stChatMessage"] *, 
 [data-testid="stChatMessage"] p, 
 [data-testid="stChatMessage"] li, 
