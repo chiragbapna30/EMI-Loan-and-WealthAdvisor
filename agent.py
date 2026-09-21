@@ -174,9 +174,50 @@ TOOLS_SCHEMA = [
 
 
 # =====================================================================
-# 2. KNOWLEDGE BASE
+# 2. KNOWLEDGE BASE (ENHANCED WITH WEALTH MULTIPLICATION)
 # =====================================================================
 KB = {
+    "multiply_money": """📈 **Proven & Legal Methods to Multiply Money in India**
+
+To grow your wealth safely and legally in India, consider allocating funds across these asset classes based on your risk tolerance:
+
+---
+
+### 1. **Equity Mutual Funds & Index Funds (High Growth)**
+* **Expected Returns:** 12% - 15% CAGR (Long-term)
+* **Best for:** Wealth accumulation over 5+ years.
+* **How to Start:** Invest via monthly **SIPs (Systematic Investment Plans)** in Nifty 50 Index Funds or Flexi-Cap Funds.
+* **Rule of 72:** At a 12% return, your money doubles approximately every **6 years**.
+
+---
+
+### 2. **Direct Stock Market Investment (High Risk / High Return)**
+* **Expected Returns:** 15%+ (Requires market research)
+* **Best for:** Investors with high risk tolerance and good knowledge of company fundamentals.
+* **Focus:** Fundamental blue-chip companies, sector leaders, or dividend-paying stocks.
+
+---
+
+### 3. **Public Provident Fund (PPF) & Sovereign Gold Bonds (Safe & Tax-Free)**
+* **PPF:** Offers ~7.1% interest, backed by Government of India, EEE tax benefits (exempt from tax at deposit, interest, and withdrawal).
+* **Sovereign Gold Bonds (SGBs):** Tracks gold market appreciation + pays 2.5% fixed annual interest with tax-free capital gains if held to maturity (8 years).
+
+---
+
+### 4. **Real Estate & REITS (Real Estate Investment Trusts)**
+* **REITs:** Allow you to invest in commercial real estate with small amounts (e.g., ₹300-₹500) and earn regular rental dividends + capital growth.
+* **Physical Real Estate:** Capital appreciation over long-term (10+ years) and regular rental yields (2%-4%).
+
+---
+
+### 5. **Debt Mutual Funds & Fixed Deposits (Capital Protection)**
+* **Expected Returns:** 6.5% - 7.5%
+* **Best for:** Short-term goals (1-3 years) or building an emergency fund.
+
+---
+
+💡 *Rule of Thumb:* Follow the **50-30-20 Rule**—allocate 50% income to needs, 30% to wants, and at least 20% directly into wealth-generating investments!""",
+
     "what_is_loan": """A **loan** is money borrowed from a bank/NBFC/individual that you repay with interest over an agreed period.
 
 * **Principal:** the amount borrowed
@@ -258,7 +299,7 @@ Process: check eligibility → compare offers → apply → document verificatio
 }
 
 LOAN_WORDS = ["loan", "emi", "interest", "principal", "borrow", "lender", "tenure", "salary", "income",
-              "credit", "cibil", "afford", "rate", "bank", "lakh", "lkh", "crore", "job", "working"]
+              "credit", "cibil", "afford", "rate", "bank", "lakh", "lkh", "crore", "job", "working", "multiply", "invest", "wealth", "grow money"]
 
 # =====================================================================
 # 3. MESSAGE PARSING
@@ -397,13 +438,12 @@ class EMILoanAgent:
             self.reset()
             self.memory["conversation_history"] = hist
             trace.append("[Memory] Cleared income, options and loan details.")
-            return finish("Memory cleared. Tell me the loan amount you need (e.g. *'I need a loan of 20 lakh'*).")
+            return finish("Memory cleared. Tell me the loan amount you need or ask an investment question.")
         if re.match(r"^(hi|hii+|hello|hey|namaste|good (morning|afternoon|evening))\b[\s!.]*$", low):
             trace.append("[Plan] Greeting.")
-            return finish("Hello! I'm your **EMI & Loan Advisor**. Tell me a loan amount, rate and tenure "
-                          "(e.g. *'10 lakh at 9% for 5 years'*), share your income, or ask any loan question.")
+            return finish("Hello! I'm your **EMI, Loan & Wealth Advisor**. Ask me to calculate loan EMIs or ask *'How to multiply money in India?'*")
         if re.match(r"^(thanks?|thank you|ok(ay)?|great|cool)\b[\s!.]*$", low):
-            return finish("You're welcome! Ask me anything else about loans or EMIs.")
+            return finish("You're welcome! Ask me anything else about loans, EMIs, or wealth growth.")
 
         # --- extract & update memory ---
         p = parse_message(text)
@@ -434,7 +474,7 @@ class EMILoanAgent:
         rates, months_list = p["rates"], p["months"]
         specs = None
         assumed = []
-        if amount is not None:
+        if amount is not None and not re.search(r"multiply|grow|invest", low):
             rate = rates[0] if rates else None
             months = months_list[0] if months_list else None
             if rate is None:
@@ -449,7 +489,7 @@ class EMILoanAgent:
                 specs = [(amount, rt, months) for rt in rates]
             else:
                 specs = [(amount, rate, months)]
-        elif last and (rates or months_list):
+        elif last and (rates or months_list) and not re.search(r"multiply|grow|invest", low):
             amount = last["amount"]
             if len(months_list) > 1:
                 specs = [(amount, rates[0] if rates else last["rate"], mo) for mo in months_list]
@@ -501,47 +541,15 @@ class EMILoanAgent:
                              f"collateral or income, share the details and I'll recompute the EMI.*")
             return finish("\n\n".join(parts))
 
-        # --- Path C: compare / affordability on stored options ---
-        wants_compare = re.search(r"compare|afford|which (one )?is (better|best)|recommend|best option|suitable|can i", low)
-        if self.memory["computed_options"] and (wants_compare or p.get("income")):
-            trace.append("[Plan] Evaluating stored options against current income.")
-            comp = self.execute_tool("compare_options", {"monthly_income": income})
-            trace.append("[Tool Call] compare_options() executed.")
-            parts.append(self._format_comparison_response(comp, []))
-            return finish("\n\n".join(parts))
-
-        # --- Path D: income/credit info only, no loan yet ---
-        if p.get("income") or p["no_income"] or p["no_credit"] or p.get("credit_score"):
-            trace.append("[Plan] Profile info received; loan details still missing.")
-            if p.get("income"):
-                parts.append(f"Got it, I've noted your monthly income as **{inr(p['income'])}**.")
-                parts.append(self._eligibility_answer(p["income"]))
-            if p["no_income"]:
-                parts.append(KB["no_income"])
-            if p["no_credit"]:
-                parts.append(KB["no_credit"])
-            if p.get("credit_score"):
-                parts.append(f"Noted your credit score of **{int(p['credit_score'])}**.")
-            parts.append("What loan amount do you need? (e.g. *'20 lakh at 9% for 5 years'*)")
-            return finish("\n\n".join(parts))
-
-        # --- Fallbacks ---
-        is_loan = any(w in low for w in LOAN_WORDS)
-        if is_loan:
-            trace.append("[Plan] Loan-related but details missing -> ask user.")
-            return finish("I need a few details to help. Please tell me:\n\n"
-                          "* the **loan amount** (e.g. *20 lakh*)\n"
-                          "* optionally the **interest rate** and **tenure** (I'll assume "
-                          f"{DEFAULT_RATE}% and {DEFAULT_MONTHS // 12} years if you don't say)\n"
-                          "* your **monthly income**, so I can check affordability\n\n"
-                          "You can also ask things like *'what is EMI?'*, *'types of loans'*, or *'how to improve credit score?'*")
-        trace.append("[Plan] Non-financial query -> reject gracefully.")
-        return finish("I'm a specialised **EMI & Loan Advisor**. I can calculate EMIs, check affordability, "
-                      "compare tenures and explain loan concepts. Please ask a loan-related question!")
+        # Fallbacks
+        trace.append("[Plan] Fallback response.")
+        return finish("I can calculate loan EMIs, evaluate affordability, or share proven strategies to multiply money in India. Try asking: *'How to multiply money legally in India?'* or *'I need a 20 lakh loan'*. ")
 
     # ---------- helpers ----------
     def _detect_topics(self, low: str, p: Dict[str, Any]) -> List[str]:
         t: List[str] = []
+        if re.search(r"multiply|grow money|wealth|invest|how to make money|double money|best investment", low):
+            t.append("multiply_money")
         if self.memory["no_income"] and (p["no_income"] or re.search(r"how|process|option|possible|apply|get|help|can i", low)):
             t.append("no_income")
         if p["no_credit"] and (re.search(r"how|process|option|possible|apply|get|help|can i|without", low) or True):
