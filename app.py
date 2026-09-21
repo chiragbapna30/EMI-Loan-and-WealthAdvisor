@@ -6,7 +6,7 @@ import streamlit as st
 from agent import EMILoanAgent, generate_amortization_schedule, inr
 import chat_store as store
 
-# Page Config - Force Sidebar Expanded Initially
+# Page Config
 st.set_page_config(
     page_title="EMI, Loan & Wealth Advisor", 
     page_icon="🏦", 
@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (SIDEBAR TOGGLE PERMANENTLY HIDDEN)
+# COMPREHENSIVE DARK MODE CSS (RESTORES SIDEBAR TOGGLE & DARK FOOTER)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -42,23 +42,31 @@ html, body, [class*="css"], .stApp {
 #MainMenu, footer { visibility: hidden; }
 
 /* ----------------------------------------------------------------------------
-   PERMANENTLY HIDE SIDEBAR TOGGLE / COLLAPSE BUTTONS
+   RESTORE & FORCE TOP-LEFT SIDEBAR TOGGLE ICON VISIBILITY
 ---------------------------------------------------------------------------- */
 header[data-testid="stHeader"] { 
-    display: none !important;
+    background: transparent !important; 
+    visibility: visible !important;
+    display: block !important;
+    z-index: 999999 !important;
 }
 
 button[data-testid="stSidebarToggle"], 
 [data-testid="stHeader"] button,
-[data-testid="stSidebarCollapseButton"] {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+[data-testid="stSidebarCollapseButton"],
+[data-testid="collapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    color: #ffffff !important;
+    background: rgba(30, 41, 59, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 10px !important;
+    z-index: 1000000 !important;
 }
 
 .block-container {
     max-width: 880px;
-    padding-top: 1.5rem;
+    padding-top: 2rem;
     padding-bottom: 6rem;
 }
 
@@ -95,10 +103,11 @@ button[data-testid="stSidebarToggle"],
 }
 
 /* ----------------------------------------------------------------------------
-   FIX FOR BOTTOM FOOTER CONTAINER & CHAT INPUT (DARK THEME)
+   FORCE BOTTOM FOOTER & CHAT INPUT TO MATCH DARK BACKGROUND
 ---------------------------------------------------------------------------- */
 [data-testid="stBottom"],
-[data-testid="stBottom"] > div {
+[data-testid="stBottom"] > div,
+footer[data-testid="stFooter"] {
     background: #0b0f19 !important;
     background-color: #0b0f19 !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -108,7 +117,7 @@ button[data-testid="stSidebarToggle"],
 .stChatInputContainer,
 div[data-testid="stChatInputContainer"] {
     background-color: rgba(30, 41, 59, 0.95) !important;
-    border: 1px solid rgba(99, 102, 241, 0.4) !important;
+    border: 1px solid rgba(99, 102, 241, 0.5) !important;
     border-radius: 16px !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
 }
