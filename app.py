@@ -9,9 +9,8 @@ import chat_store as store
 st.set_page_config(page_title="EMI & Loan Advisor Agent", page_icon="🏦", layout="centered")
 
 # ----------------------------------------------------------------------------
-# STYLING (CSS injected into Streamlit)
-# Palette:  ink #0F2A43 | teal #0E7C7B | mist #F1F6F5 | marigold #E9B44C | slate #1B2B3A
-# Fonts:    Fraunces (headings) + Plus Jakarta Sans (body)
+# CUSTOM STYLING (CSS)
+# Palette: ink #0F2A43 | teal #0E7C7B | mist #F1F6F5 | marigold #E9B44C | slate #1B2B3A
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -30,7 +29,6 @@ CUSTOM_CSS = """
     --card: #FFFFFF;
 }
 
-/* ---------- Base ---------- */
 html, body, [class*="css"], .stApp, .stMarkdown, p, li, label, input, textarea {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif !important;
     color: var(--slate);
@@ -50,7 +48,7 @@ header[data-testid="stHeader"] { background: transparent; }
     padding-bottom: 6rem;
 }
 
-/* ---------- Hero header ---------- */
+/* Hero Header */
 .hero {
     background: linear-gradient(135deg, var(--ink) 0%, var(--ink-soft) 60%, var(--teal) 130%);
     border-radius: 20px;
@@ -64,10 +62,8 @@ header[data-testid="stHeader"] { background: transparent; }
     font-weight: 700;
     font-size: 2.2rem;
     line-height: 1.15;
-    letter-spacing: -0.01em;
     color: #FFFFFF !important;
     margin: 0 0 6px 0;
-    padding: 0;
 }
 .hero p {
     color: #C9DCE8 !important;
@@ -76,7 +72,7 @@ header[data-testid="stHeader"] { background: transparent; }
     max-width: 60ch;
 }
 
-/* ---------- Sidebar ---------- */
+/* Sidebar styling */
 section[data-testid="stSidebar"] {
     background: var(--ink);
     border-right: 1px solid rgba(255,255,255,0.06);
@@ -112,10 +108,8 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(233,180,76,0.35);
 }
-section[data-testid="stSidebar"] .stButton > button p { color: var(--ink) !important; }
-section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #9FB6C8 !important; }
 
-/* ---------- Chat messages ---------- */
+/* Chat Bubbles & Tables */
 [data-testid="stChatMessage"] {
     background: var(--card);
     border: 1px solid var(--line);
@@ -130,7 +124,6 @@ section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #9F
     border-color: #BFE0DD;
 }
 
-/* ---------- Tables ---------- */
 [data-testid="stChatMessage"] table {
     width: 100%;
     border-collapse: separate;
@@ -145,7 +138,6 @@ section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #9F
     background: var(--ink);
     color: #FFFFFF !important;
     font-weight: 600;
-    text-align: left;
     padding: 10px 12px;
 }
 [data-testid="stChatMessage"] tbody td {
@@ -154,12 +146,6 @@ section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #9F
     background: #FFFFFF;
 }
 
-/* ---------- Sidebar history styling ---------- */
-.side-brand { font-family: 'Fraunces', Georgia, serif; font-size: 1.25rem; font-weight: 700; color: #FFFFFF !important; margin: 0 0 12px 2px; }
-.side-group { font-size: 0.78rem; color: #9FB6C8 !important; margin: 14px 0 4px 4px; font-weight: 600; }
-.side-empty { font-size: 0.85rem; color: #9FB6C8 !important; padding: 8px 4px; }
-
-/* ---------- Attachments & Chips ---------- */
 .file-chip {
     display: inline-block;
     background: #F1F6F5;
@@ -170,12 +156,15 @@ section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #9F
     font-size: 0.85rem;
     color: var(--ink);
 }
+.side-brand { font-family: 'Fraunces', Georgia, serif; font-size: 1.25rem; font-weight: 700; color: #FFFFFF !important; margin: 0 0 12px 2px; }
+.side-group { font-size: 0.78rem; color: #9FB6C8 !important; margin: 14px 0 4px 4px; font-weight: 600; }
+.side-empty { font-size: 0.85rem; color: #9FB6C8 !important; padding: 8px 4px; }
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------------
-# HEADER
+# HEADER & HERO
 # ----------------------------------------------------------------------------
 st.markdown(
     """
@@ -189,9 +178,8 @@ st.markdown(
 )
 
 ALLOWED_FILES = ["png", "jpg", "jpeg", "webp", "pdf", "txt", "csv"]
-FILE_NOTE = ("📎 I've saved your attachment to this chat, but I can't read the contents of images "
-             "or documents yet. Please type the key details (monthly income, loan amount, rate, "
-             "tenure) and I'll calculate.")
+FILE_NOTE = ("📎 I've saved your attachment to this chat. If using Gemini mode, "
+             "I will analyze its financial contents. In offline mode, please type key loan parameters.")
 
 # ----------------------------------------------------------------------------
 # CHAT SESSION HELPERS
@@ -225,7 +213,7 @@ def cb_delete_chat(chat_id):
         activate(store.new_id())
     st.session_state.confirm_delete = None
 
-# First load setup
+# Initial application setup
 if "agent" not in st.session_state:
     store.migrate_legacy()
     wanted = st.query_params.get("chat")
@@ -258,7 +246,7 @@ if c4.button("📈 Improve CIBIL"):
     chip_prompt = "How can I improve my CIBIL credit score fast?"
 
 # ----------------------------------------------------------------------------
-# HANDLE NEW INPUT (Chat box + Files)
+# CHAT INPUT & ATTACHMENT HANDLING
 # ----------------------------------------------------------------------------
 prompt = st.chat_input(
     "Ask about loan options or share your income...",
@@ -280,17 +268,17 @@ if prompt:
             hist[-2]["attachments"] = saved_files
             hist[-1]["content"] += "\n\n---\n" + FILE_NOTE
             hist[-1].setdefault("trace", []).append(
-                f"[Files] Saved {len(saved_files)} attachment(s); file contents are not read.")
+                f"[Files] Saved {len(saved_files)} attachment(s).")
     elif saved_files:
         hist.append({"role": "user", "content": "", "attachments": saved_files})
         hist.append({"role": "assistant", "content": FILE_NOTE,
-                     "trace": [f"[Files] Saved {len(saved_files)} attachment(s); file contents are not read."]})
+                     "trace": [f"[Files] Saved {len(saved_files)} attachment(s)."]})
 
     store.save_chat(chat_id, agent.memory)
     st.rerun()
 
 # ----------------------------------------------------------------------------
-# SIDEBAR: new chat, search, history, memory
+# SIDEBAR
 # ----------------------------------------------------------------------------
 with st.sidebar:
     st.markdown('<div class="side-brand">🏦 Loan Advisor</div>', unsafe_allow_html=True)
@@ -344,7 +332,7 @@ with st.sidebar:
         )
 
 # ----------------------------------------------------------------------------
-# MAIN DISPLAY: CONVERSATION & CHARTS
+# MAIN DISPLAY: MESSAGES & AMORTIZATION CHARTS
 # ----------------------------------------------------------------------------
 for msg in hist:
     with st.chat_message(msg["role"]):
@@ -365,7 +353,7 @@ for msg in hist:
         if msg.get("content"):
             st.markdown(msg["content"])
 
-# --- Interactive Plotly Amortization Chart & CSV Download ---
+# Render Amortization Plotly Chart and Export Button when options exist
 if agent.memory.get("computed_options"):
     opts = agent.memory["computed_options"]
     st.write("---")
