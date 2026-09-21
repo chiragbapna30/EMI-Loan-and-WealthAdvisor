@@ -15,24 +15,24 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# ADVANCED & COLORFUL CUSTOM CSS
+# ENHANCED CUSTOM CSS (FIXES TEXT VISIBILITY & ADDS HOVER EFFECTS)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
-    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-    --card-bg: rgba(30, 41, 59, 0.75);
-    --border-glow: rgba(99, 102, 241, 0.25);
+    --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #111827 50%, #0b0f19 100%);
+    --card-bg: rgba(30, 41, 59, 0.85);
+    --border-glow: rgba(99, 102, 241, 0.35);
     --primary-glow: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
     --accent-teal: #14b8a6;
     --accent-gold: #f59e0b;
     --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-muted: #cbd5e1;
 }
 
-/* Base App Setup */
+/* Base Setup */
 html, body, [class*="css"], .stApp {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     background: var(--bg-gradient) !important;
@@ -47,14 +47,14 @@ html, body, [class*="css"], .stApp {
     padding-bottom: 6rem;
 }
 
-/* Hero Title Card */
+/* Hero Header Card */
 .hero-card {
     background: rgba(15, 23, 42, 0.85);
     border: 1px solid var(--border-glow);
-    border-radius: 24px;
-    padding: 32px 36px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 28px 32px;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(12px);
     position: relative;
     overflow: hidden;
@@ -68,69 +68,76 @@ html, body, [class*="css"], .stApp {
 .hero-card h1 {
     font-family: 'Outfit', sans-serif !important;
     font-weight: 800;
-    font-size: 2.4rem;
-    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 2.2rem;
+    color: #ffffff !important;
     margin: 0 0 8px 0;
 }
 .hero-card p {
     color: var(--text-muted) !important;
     font-size: 1.05rem;
     margin: 0;
-    max-width: 65ch;
     line-height: 1.5;
 }
 
-/* Sidebar Styling */
-section[data-testid="stSidebar"] {
-    background: rgba(15, 23, 42, 0.95) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+/* ----------------------------------------------------------------------------
+   QUICK PROMPT SUGGESTION BUTTONS (HOVER TO SHOW TEXT EFFECT)
+---------------------------------------------------------------------------- */
+div[data-testid="stHorizontalBlock"] .stButton > button {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
-section[data-testid="stSidebar"] * { color: var(--text-main) !important; }
 
-/* New Chat Button */
-section[data-testid="stSidebar"] .stButton > button {
-    background: var(--primary-glow) !important;
+/* Text hidden by default (only icons/emojis visible) */
+div[data-testid="stHorizontalBlock"] .stButton > button p {
+    color: transparent !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    transition: color 0.3s ease !important;
+    text-shadow: none !important;
+}
+
+/* Hover State: Reveal full text with vibrant color and glowing border */
+div[data-testid="stHorizontalBlock"] .stButton > button:hover {
+    background: rgba(99, 102, 241, 0.25) !important;
+    border-color: #818cf8 !important;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4) !important;
+}
+div[data-testid="stHorizontalBlock"] .stButton > button:hover p {
     color: #ffffff !important;
-    border: none !important;
-    border-radius: 14px !important;
-    font-weight: 700 !important;
-    padding: 0.7rem 1rem !important;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
-    transition: all 0.2s ease-in-out !important;
-}
-section[data-testid="stSidebar"] .stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5) !important;
 }
 
-/* Memory Cards */
-.mem-card {
-    background: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    padding: 12px 16px;
-    margin-bottom: 10px;
-}
-.mem-card .label { font-size: 0.78rem; color: var(--text-muted) !important; text-transform: uppercase; letter-spacing: 0.05em; }
-.mem-card .value { font-size: 1.1rem; font-weight: 700; color: #ffffff !important; margin-top: 2px; }
-.mem-card .value.accent { color: var(--accent-gold) !important; }
-
-/* Chat Messages */
+/* ----------------------------------------------------------------------------
+   CHAT MESSAGES & CHAT TEXT VISIBILITY
+---------------------------------------------------------------------------- */
 [data-testid="stChatMessage"] {
     background: var(--card-bg) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 18px !important;
     padding: 18px 22px !important;
     margin-bottom: 16px !important;
-    backdrop-filter: blur(10px) !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
 }
+
+/* Explicitly force all text, paragraphs, lists, and headings inside chat to be bright white */
+[data-testid="stChatMessage"] *, 
+[data-testid="stChatMessage"] p, 
+[data-testid="stChatMessage"] li, 
+[data-testid="stChatMessage"] span,
+[data-testid="stChatMessage"] div {
+    color: #f8fafc !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+}
+
 [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]),
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-    background: rgba(99, 102, 241, 0.15) !important;
-    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    background: rgba(99, 102, 241, 0.2) !important;
+    border: 1px solid rgba(129, 140, 248, 0.4) !important;
 }
 
 /* Tables inside chat */
@@ -141,7 +148,7 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     border-radius: 12px;
     overflow: hidden;
     margin: 1rem 0;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
 }
 [data-testid="stChatMessage"] thead th {
     background: #1e1b4b !important;
@@ -151,24 +158,76 @@ section[data-testid="stSidebar"] .stButton > button:hover {
 }
 [data-testid="stChatMessage"] tbody td {
     padding: 12px 14px;
-    background: rgba(15, 23, 42, 0.6) !important;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    background: rgba(15, 23, 42, 0.8) !important;
+    border-top: 1px solid rgba(255,255,255,0.08);
 }
+
+/* Sidebar Styling & Fix for History Buttons */
+section[data-testid="stSidebar"] {
+    background: rgba(11, 15, 25, 0.98) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+section[data-testid="stSidebar"] * { color: var(--text-main) !important; }
+
+/* New Chat Button */
+section[data-testid="stSidebar"] .stButton > button {
+    background: var(--primary-glow) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    padding: 0.65rem 1rem !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
+}
+
+/* Fix for Sidebar Chat History Rows */
+section[data-testid="stSidebar"] [class*="st-key-hist"] .stButton > button {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+}
+section[data-testid="stSidebar"] [class*="st-key-hist"] .stButton > button p {
+    color: #f8fafc !important;
+}
+section[data-testid="stSidebar"] [class*="st-key-histactive"] .stButton > button {
+    background: rgba(99, 102, 241, 0.3) !important;
+    border-color: #818cf8 !important;
+}
+
+/* Fix for Delete Buttons */
+section[data-testid="stSidebar"] [class*="st-key-histdel"] .stButton > button {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    border-radius: 10px !important;
+}
+
+/* Memory Cards */
+.mem-card {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+}
+.mem-card .label { font-size: 0.75rem; color: var(--text-muted) !important; text-transform: uppercase; letter-spacing: 0.05em; }
+.mem-card .value { font-size: 1.05rem; font-weight: 700; color: #ffffff !important; margin-top: 2px; }
+.mem-card .value.accent { color: var(--accent-gold) !important; }
 
 /* File Chips */
 .file-chip {
     display: inline-block;
-    background: rgba(20, 184, 166, 0.15);
-    border: 1px solid rgba(20, 184, 166, 0.3);
+    background: rgba(20, 184, 166, 0.2);
+    border: 1px solid rgba(20, 184, 166, 0.4);
     border-radius: 20px;
     padding: 6px 14px;
     margin: 4px 6px 6px 0;
     font-size: 0.85rem;
-    color: #5eead4;
+    color: #5eead4 !important;
 }
 
 .side-brand { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 800; color: #ffffff !important; margin: 0 0 14px 2px; }
-.side-group { font-size: 0.78rem; color: var(--text-muted) !important; margin: 16px 0 6px 4px; font-weight: 700; text-transform: uppercase; }
+.side-group { font-size: 0.75rem; color: var(--text-muted) !important; margin: 16px 0 6px 4px; font-weight: 700; text-transform: uppercase; }
 .side-empty { font-size: 0.85rem; color: var(--text-muted) !important; padding: 8px 4px; }
 </style>
 """
@@ -242,11 +301,12 @@ chat_id = st.session_state.chat_id
 hist = agent.memory["conversation_history"]
 
 # ----------------------------------------------------------------------------
-# QUICK PROMPT CHIPS
+# QUICK PROMPT CHIPS (HOVER TO REVEAL TEXT EFFECT)
 # ----------------------------------------------------------------------------
-st.caption("✨ **Quick Prompt Suggestions:**")
+st.markdown("<span style='color: #cbd5e1; font-weight: 600; font-size: 0.9rem;'>✨ Hover over boxes to reveal prompt details:</span>", unsafe_allow_html=True)
 c1, c2, c3, c4 = st.columns(4)
 chip_prompt = None
+
 if c1.button("📌 20 L @ 8.5% 5 yrs", use_container_width=True):
     chip_prompt = "I need a loan of 20 lakh at 8.5% interest rate for 5 years. My salary is 80000."
 if c2.button("📊 Compare 3 vs 5 Yrs", use_container_width=True):
