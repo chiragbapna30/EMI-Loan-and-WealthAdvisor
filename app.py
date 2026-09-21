@@ -42,7 +42,7 @@ html, body, [class*="css"], .stApp {
 #MainMenu, footer { visibility: hidden; }
 
 /* ----------------------------------------------------------------------------
-   RESTORE & FORCE TOP-LEFT SIDEBAR TOGGLE ICON VISIBILITY
+   RESTORE & FORCE TOP-LEFT SIDEBAR TOGGLE ICON VISIBILITY AT ALL TIMES
 ---------------------------------------------------------------------------- */
 header[data-testid="stHeader"] { 
     background: transparent !important; 
@@ -64,9 +64,15 @@ button[data-testid="stSidebarToggle"],
     z-index: 1000000 !important;
 }
 
+button[data-testid="stSidebarToggle"] svg,
+[data-testid="collapsedControl"] svg {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+}
+
 .block-container {
     max-width: 880px;
-    padding-top: 2rem;
+    padding-top: 2.5rem;
     padding-bottom: 6rem;
 }
 
