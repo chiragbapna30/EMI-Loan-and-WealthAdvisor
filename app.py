@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# ENHANCED CUSTOM CSS (FIXES TEXT VISIBILITY & ADDS HOVER EFFECTS)
+# ENHANCED CUSTOM CSS (OPTIMIZED FOR DARK THEME & TEXT VISIBILITY)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -123,7 +123,6 @@ div[data-testid="stHorizontalBlock"] .stButton > button:hover p {
     box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
 }
 
-/* Explicitly force all text, paragraphs, lists, and headings inside chat to be bright white */
 [data-testid="stChatMessage"] *, 
 [data-testid="stChatMessage"] p, 
 [data-testid="stChatMessage"] li, 
@@ -162,7 +161,7 @@ div[data-testid="stHorizontalBlock"] .stButton > button:hover p {
     border-top: 1px solid rgba(255,255,255,0.08);
 }
 
-/* Sidebar Styling & Fix for History Buttons */
+/* Sidebar Styling & History Buttons */
 section[data-testid="stSidebar"] {
     background: rgba(11, 15, 25, 0.98) !important;
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -180,7 +179,7 @@ section[data-testid="stSidebar"] .stButton > button {
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
 }
 
-/* Fix for Sidebar Chat History Rows */
+/* Sidebar Chat History Rows */
 section[data-testid="stSidebar"] [class*="st-key-hist"] .stButton > button {
     background: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -195,7 +194,7 @@ section[data-testid="stSidebar"] [class*="st-key-histactive"] .stButton > button
     border-color: #818cf8 !important;
 }
 
-/* Fix for Delete Buttons */
+/* Delete Buttons */
 section[data-testid="stSidebar"] [class*="st-key-histdel"] .stButton > button {
     background: rgba(239, 68, 68, 0.2) !important;
     border: 1px solid rgba(239, 68, 68, 0.4) !important;
@@ -239,9 +238,9 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 st.markdown(
     """
     <div class="hero-card">
-        <h1>🏦 EMI & Loan Advisor</h1>
-        <p>Your AI financial companion. Share your loan goals and income to get instant affordability checks, 
-        side-by-side option comparisons, and visual repayment insights.</p>
+        <h1>🏦 EMI, Loan & Wealth Advisor</h1>
+        <p>Your AI financial companion. Share your loan goals, analyze affordability, 
+        compare repayment options, or explore legal strategies to multiply wealth in India.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -301,7 +300,7 @@ chat_id = st.session_state.chat_id
 hist = agent.memory["conversation_history"]
 
 # ----------------------------------------------------------------------------
-# QUICK PROMPT CHIPS (HOVER TO REVEAL TEXT EFFECT)
+# QUICK PROMPT CHIPS (INCLUDES MONEY MULTIPLICATION CHIP)
 # ----------------------------------------------------------------------------
 st.markdown("<span style='color: #cbd5e1; font-weight: 600; font-size: 0.9rem;'>✨ Hover over boxes to reveal prompt details:</span>", unsafe_allow_html=True)
 c1, c2, c3, c4 = st.columns(4)
@@ -313,8 +312,8 @@ if c2.button("📊 Compare 3 vs 5 Yrs", use_container_width=True):
     chip_prompt = "Compare 10 lakh loan at 9% for 3 years and 5 years"
 if c3.button("📄 Home Loan Docs", use_container_width=True):
     chip_prompt = "What documents are required for a home loan application?"
-if c4.button("📈 Improve CIBIL", use_container_width=True):
-    chip_prompt = "How can I improve my CIBIL credit score fast?"
+if c4.button("🚀 Multiply Money", use_container_width=True):
+    chip_prompt = "How can I legally multiply money in India?"
 
 # ----------------------------------------------------------------------------
 # CHAT INPUT & FILE ATTACHMENTS
