@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES ALL TEXT VISIBILITY)
+# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES TEXT & SIDEBAR VISIBILITY)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -39,7 +39,17 @@ html, body, [class*="css"], .stApp {
     color: var(--text-main) !important;
 }
 
-#MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden; }
+/* Make sure header and sidebar toggle button remain visible */
+#MainMenu, footer { visibility: hidden; }
+header[data-testid="stHeader"] { 
+    background: transparent !important; 
+    visibility: visible !important;
+}
+button[data-testid="stSidebarToggle"], 
+[data-testid="stHeader"] button {
+    color: #ffffff !important;
+    visibility: visible !important;
+}
 
 .block-container {
     max-width: 880px;
@@ -80,7 +90,7 @@ html, body, [class*="css"], .stApp {
 }
 
 /* ----------------------------------------------------------------------------
-   UNIVERSAL TEXT VISIBILITY FIX (SELECTBOX, LABELS, EXPANDERS & TITLES)
+   UNIVERSAL TEXT VISIBILITY FIX (INPUT BOX, LABELS, EXPANDERS & TITLES)
 ---------------------------------------------------------------------------- */
 label, 
 p, 
@@ -93,6 +103,16 @@ h1, h2, h3, h4, h5, h6,
 .stExpander details summary p {
     color: #f8fafc !important;
     opacity: 1 !important;
+}
+
+/* FIX FOR CHAT INPUT BOX TEXT */
+[data-testid="stChatInput"] textarea,
+[data-testid="stChatInput"] input,
+.stChatInputContainer textarea {
+    color: #ffffff !important;
+    background-color: rgba(30, 41, 59, 0.95) !important;
+    caret-color: #ffffff !important;
+    font-size: 1rem !important;
 }
 
 /* Expander Header Text Specific Fix */
@@ -430,7 +450,7 @@ with st.sidebar:
             """,
             unsafe_allow_html=True,
         )
-        if st.button(" Ask Gold Loan Eligibility", use_container_width=True):
+        if st.button("Ask Gold Loan Eligibility", use_container_width=True):
             agent.run_step("How do gold loans work and what is the maximum loan amount I can get against gold in India?")
             store.save_chat(chat_id, agent.memory)
             st.rerun()
@@ -529,6 +549,7 @@ if agent.memory.get("computed_options"):
             template="plotly_dark"
         )
         
+        # Explicit Plotly Dark Theme Color Styling for High Visibility
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
