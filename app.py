@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES TEXT & SIDEBAR VISIBILITY)
+# COMPREHENSIVE HIGH-CONTRAST DARK MODE CSS (FIXES CHAT INPUT & SIDEBAR TOGGLE)
 # ----------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
@@ -39,16 +39,22 @@ html, body, [class*="css"], .stApp {
     color: var(--text-main) !important;
 }
 
-/* Make sure header and sidebar toggle button remain visible */
 #MainMenu, footer { visibility: hidden; }
+
+/* RE-ENABLE TOP HEADER & TOP-LEFT SIDEBAR TOGGLE BUTTON */
 header[data-testid="stHeader"] { 
     background: transparent !important; 
     visibility: visible !important;
+    z-index: 999999 !important;
 }
 button[data-testid="stSidebarToggle"], 
-[data-testid="stHeader"] button {
+[data-testid="stHeader"] button,
+[data-testid="stSidebarCollapseButton"] {
     color: #ffffff !important;
     visibility: visible !important;
+    background: rgba(30, 41, 59, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
 }
 
 .block-container {
@@ -90,7 +96,39 @@ button[data-testid="stSidebarToggle"],
 }
 
 /* ----------------------------------------------------------------------------
-   UNIVERSAL TEXT VISIBILITY FIX (INPUT BOX, LABELS, EXPANDERS & TITLES)
+   CHAT INPUT BOX DARK STYLING (FIXES WHITE CHATBOX BACKGROUND)
+---------------------------------------------------------------------------- */
+[data-testid="stChatInput"],
+.stChatInputContainer,
+div[data-testid="stChatInputContainer"] {
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid rgba(99, 102, 241, 0.4) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-testid="stChatInput"] textarea,
+[data-testid="stChatInput"] input,
+.stChatInputContainer textarea {
+    color: #ffffff !important;
+    background-color: transparent !important;
+    caret-color: #ffffff !important;
+    font-size: 1rem !important;
+}
+
+[data-testid="stChatInput"] textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Chat Input Send Icon Button */
+[data-testid="stChatInput"] button {
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+}
+
+/* ----------------------------------------------------------------------------
+   UNIVERSAL TEXT VISIBILITY FIX (SELECTBOX, LABELS, EXPANDERS & TITLES)
 ---------------------------------------------------------------------------- */
 label, 
 p, 
@@ -105,24 +143,12 @@ h1, h2, h3, h4, h5, h6,
     opacity: 1 !important;
 }
 
-/* FIX FOR CHAT INPUT BOX TEXT */
-[data-testid="stChatInput"] textarea,
-[data-testid="stChatInput"] input,
-.stChatInputContainer textarea {
-    color: #ffffff !important;
-    background-color: rgba(30, 41, 59, 0.95) !important;
-    caret-color: #ffffff !important;
-    font-size: 1rem !important;
-}
-
-/* Expander Header Text Specific Fix */
 .stExpander details summary span,
 .stExpander details summary div {
     color: #f8fafc !important;
     font-weight: 700 !important;
 }
 
-/* Selectbox Dropdown Box Styling */
 div[data-baseweb="select"] > div {
     background-color: rgba(30, 41, 59, 0.95) !important;
     color: #ffffff !important;
@@ -135,7 +161,6 @@ div[data-baseweb="select"] span {
     font-weight: 600 !important;
 }
 
-/* Dropdown Menu Popover Options */
 div[data-baseweb="popover"] div, 
 div[data-baseweb="menu"] div {
     background-color: #1e293b !important;
@@ -549,7 +574,6 @@ if agent.memory.get("computed_options"):
             template="plotly_dark"
         )
         
-        # Explicit Plotly Dark Theme Color Styling for High Visibility
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
