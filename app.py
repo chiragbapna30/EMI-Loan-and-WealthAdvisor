@@ -1,9 +1,8 @@
 import html
-import pandas as pd
-import plotly.express as px
+
 import streamlit as st
 
-from agent import EMILoanAgent, generate_amortization_schedule, inr
+from agent import EMILoanAgent
 import chat_store as store
 
 # Page Config
@@ -162,36 +161,6 @@ div[data-baseweb="select"] span {
 div[data-baseweb="popover"] div, 
 div[data-baseweb="menu"] div {
     background-color: #1e293b !important;
-    color: #ffffff !important;
-}
-
-/* ----------------------------------------------------------------------------
-   QUICK PROMPT SUGGESTION BUTTONS
----------------------------------------------------------------------------- */
-div[data-testid="stHorizontalBlock"] .stButton > button {
-    background: rgba(30, 41, 59, 0.8) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 12px !important;
-    padding: 12px 14px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-div[data-testid="stHorizontalBlock"] .stButton > button p {
-    color: transparent !important;
-    font-weight: 600 !important;
-    font-size: 0.92rem !important;
-    transition: color 0.3s ease !important;
-    text-shadow: none !important;
-}
-
-div[data-testid="stHorizontalBlock"] .stButton > button:hover {
-    background: rgba(99, 102, 241, 0.25) !important;
-    border-color: #818cf8 !important;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4) !important;
-}
-div[data-testid="stHorizontalBlock"] .stButton > button:hover p {
     color: #ffffff !important;
 }
 
@@ -380,29 +349,13 @@ chat_id = st.session_state.chat_id
 hist = agent.memory["conversation_history"]
 
 # ----------------------------------------------------------------------------
-# QUICK PROMPT CHIPS
-# ----------------------------------------------------------------------------
-st.markdown("<span style='color: #cbd5e1; font-weight: 600; font-size: 0.9rem;'>✨ Hover over boxes to reveal prompt details:</span>", unsafe_allow_html=True)
-c1, c2, c3, c4 = st.columns(4)
-chip_prompt = None
-
-if c1.button("📌 20 L @ 8.5% 5 yrs", use_container_width=True):
-    chip_prompt = "I need a loan of 20 lakh at 8.5% interest rate for 5 years. My salary is 80000."
-if c2.button("📊 Compare 3 vs 5 Yrs", use_container_width=True):
-    chip_prompt = "Compare 10 lakh loan at 9% for 3 years and 5 years"
-if c3.button("📄 Home Loan Docs", use_container_width=True):
-    chip_prompt = "What documents are required for a home loan application?"
-if c4.button("🚀 Multiply Money", use_container_width=True):
-    chip_prompt = "How can I legally multiply money in India?"
-
-# ----------------------------------------------------------------------------
 # CHAT INPUT & FILE ATTACHMENTS
 # ----------------------------------------------------------------------------
 prompt = st.chat_input(
     "Ask about loan options, share income, or upload files...",
     accept_file="multiple",
     file_type=ALLOWED_FILES,
-) or chip_prompt
+)
 
 if prompt:
     if isinstance(prompt, str):
@@ -432,51 +385,6 @@ if prompt:
 with st.sidebar:
     st.markdown('<div class="side-brand">🏦 Loan Advisor</div>', unsafe_allow_html=True)
     st.button("＋  New Chat", key="newchat", on_click=cb_new_chat, use_container_width=True)
-
-    # --- INDIAN BANK HOME LOAN RATE COMPARISON ---
-    with st.expander("🏛️ Major Indian Banks Rates (2026)", expanded=False):
-        st.markdown("Select a bank to query its starting home loan rate:")
-        bank_rates = {
-            "SBI": "7.25% p.a.",
-            "HDFC Bank": "7.75% p.a.",
-            "ICICI Bank": "8.50% p.a.",
-            "Axis Bank": "8.75% p.a.",
-            "Bank of Baroda": "8.40% p.a.",
-            "Kotak Mahindra": "8.70% p.a."
-        }
-        selected_bank = st.selectbox("Compare Indian Lenders:", list(bank_rates.keys()))
-        rate_val = bank_rates[selected_bank]
-        st.info(f"**{selected_bank}** Home Loan starting rate: **{rate_val}**")
-        
-        if st.button(f"Calculate with {selected_bank}", use_container_width=True):
-            rate_num = float(rate_val.replace("% p.a.", ""))
-            agent.run_step(f"Calculate EMI for 20 lakh loan at {rate_num}% for 5 years with my salary")
-            store.save_chat(chat_id, agent.memory)
-            st.rerun()
-
-    # --- INDIAN GOLD & SILVER RATES ---
-    with st.expander("🪙 Gold & Silver Rates in India (2026)", expanded=False):
-        st.markdown(
-            """
-            <div class="mem-card" style="border-left: 4px solid #f59e0b;">
-                <div class="label">24K Gold (per 10g)</div>
-                <div class="value accent">₹76,450</div>
-            </div>
-            <div class="mem-card" style="border-left: 4px solid #e2e8f0;">
-                <div class="label">22K Gold (per 10g)</div>
-                <div class="value">₹70,080</div>
-            </div>
-            <div class="mem-card" style="border-left: 4px solid #94a3b8;">
-                <div class="label">Silver (per 1 kg)</div>
-                <div class="value" style="color: #cbd5e1 !important;">₹89,200</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if st.button("Ask Gold Loan Eligibility", use_container_width=True):
-            agent.run_step("How do gold loans work and what is the maximum loan amount I can get against gold in India?")
-            store.save_chat(chat_id, agent.memory)
-            st.rerun()
 
     query = st.text_input("Search chats", key="q_search", placeholder="Search chat history...", label_visibility="collapsed")
     chats = store.search_chats(query)
@@ -546,49 +454,3 @@ for msg in hist:
 
         if msg.get("content"):
             st.markdown(msg["content"])
-
-# Render Amortization Plotly Chart and Export Button when options exist
-if agent.memory.get("computed_options"):
-    opts = agent.memory["computed_options"]
-    st.write("---")
-    
-    with st.expander("📈 Interactive Amortization Schedule Chart", expanded=True):
-        selected_opt = st.selectbox(
-            "Select Loan Option to Analyze:",
-            options=range(len(opts)),
-            format_func=lambda i: f"Option {i+1}: {inr(opts[i]['amount'])} @ {opts[i]['rate_annual']}% for {opts[i]['months']} Months"
-        )
-        opt_data = opts[selected_opt]
-        schedule = generate_amortization_schedule(opt_data["amount"], opt_data["rate_annual"], opt_data["months"])
-        df_schedule = pd.DataFrame(schedule)
-        
-        fig = px.bar(
-            df_schedule, 
-            x="Month", 
-            y=["Principal Paid", "Interest Paid"], 
-            title=f"Repayment Breakdown: Option {selected_opt + 1}",
-            labels={"value": "Amount (₹)", "variable": "Payment Type"},
-            color_discrete_map={"Principal Paid": "#14b8a6", "Interest Paid": "#f59e0b"},
-            template="plotly_dark"
-        )
-        
-        fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Plus Jakarta Sans, sans-serif", color="#f8fafc", size=14),
-            title=dict(font=dict(color="#ffffff", size=18)),
-            legend=dict(font=dict(color="#ffffff")),
-            xaxis=dict(title_font=dict(color="#ffffff"), tickfont=dict(color="#f8fafc")),
-            yaxis=dict(title_font=dict(color="#ffffff"), tickfont=dict(color="#f8fafc"))
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-    with st.expander("📥 Export Comparison Summary", expanded=False):
-        df_opts = pd.DataFrame(opts)
-        csv_bytes = df_opts.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="Download Comparison Summary (CSV)",
-            data=csv_bytes,
-            file_name="loan_comparison_summary.csv",
-            mime="text/csv"
-        )
