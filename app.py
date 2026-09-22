@@ -131,7 +131,7 @@ div[data-testid="stChatInputContainer"] {
 [data-testid="stChatInput"] textarea,
 [data-testid="stChatInput"] input,
 .stChatInputContainer textarea {
-    color: #ffffff !important;
+    color: #000000 !important;
     background-color: transparent !important;
     caret-color: #ffffff !important;
     font-size: 1rem !important;
