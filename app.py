@@ -131,7 +131,7 @@ div[data-testid="stChatInputContainer"] {
 [data-testid="stChatInput"] textarea,
 [data-testid="stChatInput"] input,
 .stChatInputContainer textarea {
-    color: #000000 !important;
+    color: #ffffff !important;
     background-color: transparent !important;
     caret-color: #ffffff !important;
     font-size: 1rem !important;
@@ -139,7 +139,7 @@ div[data-testid="stChatInputContainer"] {
 }
 
 [data-testid="stChatInput"] textarea::placeholder {
-    color: #94a3b8 !important;
+    color: #000000 !important;
     font-weight: 400 !important;
 }
 
