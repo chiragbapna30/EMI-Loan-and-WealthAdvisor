@@ -43,31 +43,48 @@ html, body, [class*="css"], .stApp {
 
 /* ----------------------------------------------------------------------------
    RESTORE & FORCE TOP-LEFT SIDEBAR TOGGLE ICON VISIBILITY AT ALL TIMES
+   (Streamlit has renamed this control's data-testid across versions, e.g.
+   "stSidebarCollapseButton", "stSidebarCollapsedControl", "collapsedControl" -
+   so every rule below uses BOTH the exact known names and a substring match
+   ([data-testid*="ollaps"]) that catches any of them regardless of version.
+   The button also fades to near-invisible until hovered by default, which is
+   the actual reason it "disappears" - opacity/pointer-events are forced here
+   so it is always visible and always clickable, not just present in the DOM.
 ---------------------------------------------------------------------------- */
-header[data-testid="stHeader"] { 
-    background: transparent !important; 
+header[data-testid="stHeader"],
+[data-testid^="stHeader"] {
+    background: transparent !important;
     visibility: visible !important;
     display: block !important;
+    overflow: visible !important;
     z-index: 999999 !important;
 }
 
-button[data-testid="stSidebarToggle"], 
-[data-testid="stHeader"] button,
-[data-testid="stSidebarCollapseButton"],
-[data-testid="collapsedControl"] {
+button[data-testid="stSidebarToggle"],
+button[data-testid="stSidebarCollapseButton"],
+button[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"],
+[data-testid*="ollaps"],
+[data-testid*="ollaps"] button,
+[data-testid="stHeader"] button {
     display: flex !important;
     visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
     color: #ffffff !important;
     background: rgba(30, 41, 59, 0.95) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
     border-radius: 10px !important;
-    z-index: 1000000 !important;
+    z-index: 2147483647 !important;
 }
 
 button[data-testid="stSidebarToggle"] svg,
-[data-testid="collapsedControl"] svg {
+button[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="collapsedControl"] svg,
+[data-testid*="ollaps"] svg {
     fill: #ffffff !important;
     color: #ffffff !important;
+    opacity: 1 !important;
 }
 
 .block-container {
@@ -110,16 +127,34 @@ button[data-testid="stSidebarToggle"] svg,
 
 /* ----------------------------------------------------------------------------
    FORCE BOTTOM FOOTER & CHAT INPUT TO MATCH DARK BACKGROUND
+   (Same version-mismatch problem as the sidebar toggle: exact-name selectors
+   like "stChatInputContainer" can silently stop matching after a Streamlit
+   update, which is how you end up with white-on-white text - the color rule
+   still hits a broad wildcard elsewhere, but the background rule that was
+   supposed to darken the box behind it never fires. Every selector below is
+   duplicated as a [data-testid*="..."] substring match so a renamed testid
+   still gets caught, and every element in the whole fixed-bottom bar - not
+   just the ones we can name - is force-darkened as a safety net.
 ---------------------------------------------------------------------------- */
 [data-testid="stBottom"],
 [data-testid="stBottom"] > div,
-footer[data-testid="stFooter"] {
+[data-testid^="stBottom"],
+[data-testid^="stBottomBlockContainer"],
+footer[data-testid="stFooter"],
+footer {
     background: #0b0f19 !important;
     background-color: #0b0f19 !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
+/* Catch-all: anything inside the bottom bar gets a dark background unless
+   it's explicitly styled otherwise below (buttons, chips, etc.) */
+[data-testid^="stBottom"] * {
+    background-color: transparent;
+}
+
 [data-testid="stChatInput"],
+[data-testid*="ChatInput"],
 .stChatInputContainer,
 div[data-testid="stChatInputContainer"] {
     background-color: rgba(30, 41, 59, 0.95) !important;
@@ -128,25 +163,53 @@ div[data-testid="stChatInputContainer"] {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
 }
 
+/* The actual editable field: cover every element type Streamlit has used
+   for this across versions (textarea, input, and a contenteditable div for
+   the newer multimodal/file-upload chat box), and set color + background on
+   the SAME rule so they can never end up mismatched again. -webkit-text-fill-
+   color is added because some Chromium builds render editable text through
+   that property instead of (or in addition to) `color`. */
 [data-testid="stChatInput"] textarea,
 [data-testid="stChatInput"] input,
-.stChatInputContainer textarea {
+[data-testid="stChatInput"] [contenteditable="true"],
+[data-testid*="ChatInput"] textarea,
+[data-testid*="ChatInput"] input,
+[data-testid*="ChatInput"] [contenteditable="true"],
+.stChatInputContainer textarea,
+textarea[aria-label*="loan" i],
+textarea[placeholder*="loan" i] {
     color: #ffffff !important;
-    background-color: transparent !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: rgba(30, 41, 59, 0.95) !important;
     caret-color: #ffffff !important;
     font-size: 1rem !important;
     font-weight: 500 !important;
 }
 
-[data-testid="stChatInput"] textarea::placeholder {
+[data-testid="stChatInput"] textarea::placeholder,
+[data-testid*="ChatInput"] textarea::placeholder,
+[data-testid="stChatInput"] [contenteditable="true"]:empty::before {
     color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
     font-weight: 400 !important;
+    opacity: 1 !important;
 }
 
-[data-testid="stChatInput"] button {
+[data-testid="stChatInput"] button,
+[data-testid*="ChatInput"] button {
     background-color: #6366f1 !important;
-    color: #000000 !important;
+    color: #ffffff !important;
     border-radius: 10px !important;
+}
+
+/* Belt-and-braces: force every plain textarea/text input anywhere in the
+   app to dark-on-light-text, so even an untested future DOM change can't
+   silently reproduce this same white-on-white bug. */
+textarea, input[type="text"] {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: rgba(30, 41, 59, 0.95) !important;
+    caret-color: #ffffff !important;
 }
 
 /* ----------------------------------------------------------------------------
