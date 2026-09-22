@@ -139,13 +139,13 @@ div[data-testid="stChatInputContainer"] {
 }
 
 [data-testid="stChatInput"] textarea::placeholder {
-    color: #000000 !important;
+    color: #94a3b8 !important;
     font-weight: 400 !important;
 }
 
 [data-testid="stChatInput"] button {
     background-color: #6366f1 !important;
-    color: #ffffff !important;
+    color: #000000 !important;
     border-radius: 10px !important;
 }
 
